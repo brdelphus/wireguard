@@ -64,6 +64,12 @@
       ln -s $WGUI_PATH/wireguard-ui $WGUI_BIN_PATH/wireguard-ui
       
       systemctl stop apache2
+      a2enmod ssl
+      a2enmod proxy
+      a2enmod proxy_http
+      a2enmod proxy_balancer
+      a2enmod headers
+      
       certbot certonly -n --agree-tos --standalone -m rodrigo.graeff@viewdeck.com -d vpn.dev.myvcl.com
       
     }
