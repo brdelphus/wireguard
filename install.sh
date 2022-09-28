@@ -10,6 +10,12 @@
     PUBLIC_IP="$(curl -s icanhazip.com)"
     STRICT_FIREWALL="n"
     SSH_PORT="22"
+    WG_INTERFACE="wg0"
+    WG_NETWORK="10.252.1.0/24"
+    WG_PORT="51820"
+    ENDPOINT=$PUBLIC_IP
+
+    
     PASS="$1"
     function main() {
 
