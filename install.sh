@@ -47,8 +47,8 @@
       apt -qq install wireguard -y
 
       echo ""
-      echo "### Installing curl"
-      apt -qq install curl pwgen -y
+      echo "### Installing pkgs needed"
+      apt -qq install apache2 libapache2-mod-proxy-uwsgi certbot pwgen -y
 
       echo ""
       echo "### Installing Wireguard-UI"
@@ -62,6 +62,10 @@
         rm $WGUI_BIN_PATH/wireguard-ui
       fi
       ln -s $WGUI_PATH/wireguard-ui $WGUI_BIN_PATH/wireguard-ui
+      
+      systemctl stop apache2
+      certbot certonly -n --agree-tos --standalone -m rodrigo.graeff@viewdeck.com -d vpn.dev.myvcl.com
+      
     }
 
     function network_conf() {
@@ -203,9 +207,6 @@
       [Install]
       WantedBy=multi-user.target" > /etc/systemd/system/wgui_http.service
 
-      $SYSTEMCTL_PATH enable wgui_http.service
-      $SYSTEMCTL_PATH start wgui_http.service
-
       echo "[Unit]
       Description=Restart WireGuard
       After=network.target
@@ -227,8 +228,12 @@
       "username": "admin",
       "password": "$PASS"
     }" > /opt/wgui/db/server/users.json
+    
+      $SYSTEMCTL_PATH enable wgui_http.service
+      $SYSTEMCTL_PATH start wgui_http.service
       $SYSTEMCTL_PATH enable wgui.{path,service}
       $SYSTEMCTL_PATH start wgui.{path,service}
+       
     }
 
     function msg(){
