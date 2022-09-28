@@ -40,7 +40,7 @@
 
       echo ""
       echo "### Update & Upgrade"
-      apt -qq update && apt -qq full-upgrade -y
+      apt -qq update
 
       echo ""
       echo "### Installing WireGuard"
