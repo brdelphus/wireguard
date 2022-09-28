@@ -6,7 +6,7 @@
     WGUI_PATH="/opt/wgui"                                                                                                   
     WGUI_BIN_PATH="/usr/local/bin"                                                                                          
     SYSTEMCTL_PATH="/usr/bin/systemctl"
-    SYS_INTERFACE_GUESS=$(ip route show default | awk '/default/ {print $5}')
+    SYS_INTERFACE=$(ip route show default | awk '/default/ {print $5}')
     PUBLIC_IP="$(curl -s icanhazip.com)"
     STRICT_FIREWALL="n"
     SSH_PORT="22"
