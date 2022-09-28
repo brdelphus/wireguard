@@ -10,7 +10,7 @@
     PUBLIC_IP="$(curl -s icanhazip.com)"
     STRICT_FIREWALL="n"
     SSH_PORT="22"
-
+    PASS="$1"
     function main() {
 
       install
