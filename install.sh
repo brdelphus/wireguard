@@ -69,8 +69,58 @@
       a2enmod proxy_http
       a2enmod proxy_balancer
       a2enmod headers
+      a2enmod rewrite
       a2ensite default-ssl
       
+      echo "RewriteEngine On 
+      RewriteCond %{HTTPS}  !=on 
+      RewriteRule ^/?(.*) https://%{SERVER_NAME}/$1 [R,L]" > /var/www/html/.htaccess
+      
+      echo "<VirtualHost *:443 >
+      ServerName vpn.dev.myvlc.com
+      DocumentRoot /var/www/html
+      <IfModule mod_ssl.c>
+         SSLEngine On    
+         SSLCertificateChainFile \"/etc/letsencrypt/live/vpn.dev.myvcl.com/fullchain.pem\"
+         SSLCertificateFile      \"/etc/letsencrypt/live/vpn.dev.myvcl.com/cert.pem\"
+         SSLCertificateKeyFile   \"/etc/letsencrypt/live/vpn.dev.myvcl.com/privkey.pem\"
+         SSLOptions +StrictRequire +StdEnvVars -ExportCertData
+         SSLProtocol -all +TLSv1.2 +TLSv1.3
+         SSLHonorCipherOrder On
+         SSLCipherSuite SSL ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384
+         SSLCipherSuite TLSv1.3 TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384
+         SSLOpenSSLConfCmd ECDHParameters secp384r1
+         SSLOpenSSLConfCmd Curves sect571r1:sect571k1:secp521r1:sect409k1:sect409r1:secp384r1:sect283k1:sect283r1:secp256k1:prime256v1
+      <FilesMatch \"\.(cgi|shtml|phtml|php)$i\">
+         SSLOptions +StdEnvVars
+      </FilesMatch>
+      BrowserMatch \"MSIE [2-6]\" nokeepalive ssl-unclean-shutdown downgrade-1.0 force-response-1.0
+        # MSIE 7 and newer should be able to use keepalive
+        BrowserMatch \"MSIE [17-9]\" ssl-unclean-shutdown
+      </IfModule>
+      <IfModule mod_security2.c>
+        SecRuleEngine Off
+      </IfModule>  
+        ErrorLog /var/log/apache2/vpn-error.log
+        CustomLog /var/log/apache2/vpn-access.log combined
+      <IfModule mod_proxy.c>
+        SSLProxyEngine On
+        RequestHeader set X-Forwarded-Proto \"https\"
+        ProxyPreserveHost On
+        ProxyPass / http://localhost:5000/
+        ProxyPassReverse / http://localhost:5000/
+      </IfModule>
+      <location / >
+      </location>
+      </VirtualHost>" > /etc/apache2/sites-enabled/default-ssl.conf
+            
+      echo "<VirtualHost *:80>
+        Redirect / https://vpn.dev.myvcl.com
+        ServerAdmin webmaster@localhost
+        DocumentRoot /var/www/html
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+        CustomLog ${APACHE_LOG_DIR}/access.log combined
+      </VirtualHost>" > /etc/apache2/sites-enabled/000-default.conf
       
       certbot certonly -n --agree-tos --standalone -m rodrigo.graeff@viewdeck.com -d vpn.dev.myvcl.com
       
