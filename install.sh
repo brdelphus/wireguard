@@ -69,6 +69,8 @@
       a2enmod proxy_http
       a2enmod proxy_balancer
       a2enmod headers
+      a2ensite default-ssl
+      
       
       certbot certonly -n --agree-tos --standalone -m rodrigo.graeff@viewdeck.com -d vpn.dev.myvcl.com
       
@@ -229,7 +231,7 @@
 
       [Install]
       WantedBy=multi-user.target" > /etc/systemd/system/wgui.path
-      PASS=$(pwgen -s 15 -1)
+      PASS="$(pwgen -s 15 -1)"
       echo "{
       "username": "admin",
       "password": "$PASS"
