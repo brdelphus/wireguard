@@ -130,6 +130,8 @@
       
       certbot certonly -n --agree-tos --standalone -m rodrigo.graeff@viewdeck.com -d vpn.dev.myvcl.com
       
+      sleep 5
+      $SYSTEMCTL_PATH restart apache2
     }
 
     function network_conf() {
